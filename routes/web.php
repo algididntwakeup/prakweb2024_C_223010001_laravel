@@ -1,30 +1,43 @@
 <?php
 
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Category;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
-use App\Models\Post;
 
-Route::get('/welcome', function () {
-    return view('welcome');
+
+Route::get('/', function () {
+    return view('home', ['tittle' => 'Home Page']);
 });
 
 Route::get('/about', function () {
-    return view('about', ['nama' => 'Mohamed Al Ghifari', 'title' => 'About']);
-});
-
-Route::get('/', function () {
-    return view('home', ['title' => 'Home Page']);
+    return view('about', ['name' => 'Mohamed Al Ghifari', 'tittle' => 'About']);
 });
 
 Route::get('/posts', function () {
-    return view('posts', ['title' => 'Blog', 'posts' => Post::all()]);
+    // $posts = Post::with(['author', 'category'] )->latest()->get();
+    $posts = Post::latest()->get();
+    return view('posts', ['tittle' => 'Blog', 'posts'=> $posts]);
 });
 
-Route::get('/posts/{slug}', function ($slug) {
-    $post = Post::find($slug);
-    return view('post', ['title' => 'Single Post', 'post' => $post]);
+Route::get('/posts/{post:slug}', function (Post $post) {
+    return view('post', ['tittle' => 'Single Post', 'post' => $post]);
+});
+
+Route::get('/authors/{user:username}', function (User $user) {
+    // $posts  = $user->posts->load('category', 'author');
+
+    return view('posts', ['tittle' => count($user->posts) . 'Articles by ' . $user->name, 'posts' => $user->posts]);
+});
+
+Route::get('/categories/{category:slug}', function (Category $category) {
+    // $posts  = $category->posts->load('category', 'author');
+
+    return view('posts', ['tittle' =>  'Articles in: ' . $category->name, 'posts' => $category->posts]);
 });
 
 Route::get('/contact', function () {
-    return view('contact', ['title' => 'Contact']);
+    return view('contact', ['tittle' => 'Contact']);
 });
+
