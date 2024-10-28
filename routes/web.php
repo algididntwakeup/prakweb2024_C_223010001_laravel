@@ -16,10 +16,10 @@ Route::get('/about', function () {
 });
 
 Route::get('/posts', function () {
-    // $posts = Post::with(['author', 'category'] )->latest()->get();
-    $posts = Post::latest()->get();
-    return view('posts', ['tittle' => 'Blog', 'posts'=> $posts]);
+    $posts = Post::filter(request(['search', 'category', 'author']))->latest()->paginate(9)->withQueryString();
+    return view('posts', ['tittle' => 'Blog', 'posts' => $posts]);
 });
+
 
 Route::get('/posts/{post:slug}', function (Post $post) {
     return view('post', ['tittle' => 'Single Post', 'post' => $post]);
